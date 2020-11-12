@@ -1,32 +1,30 @@
 'use strict';
 
-let html = ""
-let address = 'https://dog.ceo/api/breeds/image/random/';
+let breed = ""
 
 function watchForm() {
   $("form").submit(event => {
     event.preventDefault();
-    html = address + $("#number").val();
-    console.log(html);
+    breed = $("#breed").val().toLowerCase();
+    console.log(breed);
     generateImages();
   });
 }
 
 function generateImages() {
-  fetch(html)
+  fetch('https://dog.ceo/api/breed/'+ breed + '/images/random')
     .then((res) => res.json())
-    .then((resJson) => {
-      let output = "";
-      resJson.message.forEach(function(html){
-        console.log(html);
-        output += 
-        `
-        <div class="gallery">
-          <img src=${html} alt="Img" height="400">
-        </div>      
-        `;
-      });
-      document.getElementById('photos').innerHTML = output;
+    .then((resJson) => {    
+      if (resJson.code == "404") {
+        alert(resJson.message);
+      }else{
+      document.getElementById('photos').innerHTML = 
+      `
+      <div class="gallery">
+        <img src=${resJson.message} alt="Img" height="400">
+      </div>      
+      `;
+    }
     })
     .catch(error => alert('Something went wrong. Try again later.'));
 }
